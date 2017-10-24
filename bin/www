@@ -37,7 +37,9 @@ io.on('connection', function(socket) {
 
     dispara_hora(socket);
 
-    socket.on('mensagem', trata_mesagem(data));
+    socket.on('mensagem', function(data) {
+        trata_mesagem(data)
+    });
 
     socket.on('disconnect', function() {
         console.log('Usuário foi desconectado.');
