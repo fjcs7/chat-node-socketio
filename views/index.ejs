@@ -2,28 +2,6 @@
 
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        $(function() {
-            var socket = io();
-            $('form').submit(function() {
-                //Exercício 4) Modifique o tutorial de chat WebSockets de forma a receber o nick de usuário;
-                socket.emit('mensagem', {
-                    user: $('#nome').val(),
-                    msg: $('#mensagem').val()
-                });
-                $('#mensagem').val('');
-                return false;
-            });
-            socket.on('mensagem', function(msg) {
-                //Exercício 5) Modifique o tutorial de chat WebSockets de forma a permitir o envio de um link de uma figura;
-                $('#mural').append($('<li>').html(msg));
-            });
-            socket.on('horaServidor', function(hora) {
-                $('#hora').text(hora);
-            });
-        });
-    </script>
     <title>bate-papo ajax</title>
 </head>
 
@@ -32,9 +10,14 @@
         <br/> Hora do servidor: <label type="text" size="10" id="hora" />
     </div>
     <ul style="width:700px; height:400px; overflow: auto;" id="mural"></ul>
-    <form action="">
-        <br/> Nome: <input type="text" size="10" id="nome" /> Mensagem: <input type="text" size="30" id="mensagem" /><button>Enviar</button>
+    <form id="form_dados" action="">
+        <br/> Nome: <input type="text" size="10" id="nome" /> Mensagem: <input type="text" size="30" id="mensagem" autocomplete="off" />
+        <button>Enviar</button>
     </form>
+    <!-- Como serão utilizados elementos da prórpria página no functions então o arquivo só 
+         poderá ser carregado após a página ser renderizada -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/index_functions.js" type="text/javascript"></script>
 </body>
 
 </html>
