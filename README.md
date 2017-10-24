@@ -4,15 +4,19 @@
 
 > npm install -g express-generator
 
-#Na pasta do projeto via cmd
+### Na pasta do projeto via cmd
 
-> express -e // para preparar o ambiente para usar o express
+Para preparar o ambiente para usar o express
+> express -e 
 
-> npm install // baixando bibliotecas necessárias
+Baixando bibliotecas necessárias
+> npm install
 
-> npm install -S socket.io // baixando o socket.io
+Baixando o socket.io
+> npm install -S socket.io
 
-> npm install -S isuri // baixando o isUri usado para realizar validações de links
-	
-> npm start //Para executar o projeto
+Baixando o isUri usado para realizar validações de links
+> npm install -S isuri
 
+Para executar o projeto
+> npm start
