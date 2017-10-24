@@ -8,6 +8,8 @@ var app = require('../app');
 var debug = require('debug')('chat:server');
 var http = require('http');
 
+var isUri = require('isuri');
+
 /**
  * Get port from environment and store in Express.
  */
@@ -28,35 +30,76 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-
-
 var io = require('socket.io')(server);
-io.on('connection', function(socket){
-  /* Para enviar mensagem de conectado quado alguém se conecta */
-  console.log('Um usuário está conectado.');
-  socket.on('disconnect', function(){
-    console.log('Usuário foi desconectado.');
-  });
+io.on('connection', function(socket) {
+    /* Para enviar mensagem de conectado quando alguém se conecta */
+    console.log('Um usuário está conectado.');
+
+    dispara_hora(socket);
+
+    socket.on('mensagem', trata_mesagem(data));
+
+    socket.on('disconnect', function() {
+        console.log('Usuário foi desconectado.');
+    });
 });
+
+/*
+Exercício 1) Toda mensagem enviada pelo usuário é repetida (ecoada) na tela do próprio chat;
+*/
+function trata_mesagem(data) {
+    try {
+        /*
+            Exercício 3) O servidor recebe uma expressão aritmética e retorna o resultado. Dica: utilize a função eval();
+        */
+        var msgRetorno = eval(data.msg);
+        msgRetorno = data.msg + " = " + msgRetorno;
+    } catch (error) {
+        msgRetorno = data.msg;
+
+        //Exercício 5) Modifique o tutorial de chat WebSockets de forma a permitir o envio de um link de uma figura;
+        if (isUri.isValid(msgRetorno)) {
+            msgRetorno = '<a href="' + msgRetorno + '">link externo</a>';
+        }
+    }
+    console.log('message: ' + data.user + ':' + data.msg);
+
+    //Exercício 4) Modifique o tutorial de chat WebSockets de forma a receber o nick de usuário;
+    io.emit('mensagem', data.user + " : " + msgRetorno);
+}
+
+/*
+Exercício 2) O sistema envia regularmente, de segundo em segundo, uma mensagem com o horário do servidor;
+*/
+function dispara_hora(socket) {
+
+    var d = new Date();
+    socket.emit('horaServidor', d.toLocaleTimeString());
+    t = setTimeout(
+        function() {
+            dispara_hora(socket)
+        },
+        1000);
+}
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+    var port = parseInt(val, 10);
 
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
 
-  if (port >= 0) {
-    // port number
-    return port;
-  }
+    if (port >= 0) {
+        // port number
+        return port;
+    }
 
-  return false;
+    return false;
 }
 
 /**
@@ -64,27 +107,27 @@ function normalizePort(val) {
  */
 
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+    var bind = typeof port === 'string' ?
+        'Pipe ' + port :
+        'Port ' + port;
 
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
 }
 
 /**
@@ -92,9 +135,10 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+    var addr = server.address();
+    var bind = typeof addr === 'string' ?
+        'pipe ' + addr :
+        'port ' + addr.port;
+    debug('Listening on ' + bind);
+    console.log('O exemplo está rodando na porta:' + addr.port + '!');
 }
